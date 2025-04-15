@@ -1,9 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
+
+type Product struct {
+	Name string
+}
 
 func main() {
 	mux := http.NewServeMux()
@@ -14,5 +19,21 @@ func main() {
 }
 
 func handleProducts(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello from products")
+	var product Product
+
+	err := json.NewDecoder(r.Body).Decode(&product)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+
+		return
+	}
+
+	if product.Name == "" {
+		http.Error(w, "product name is required", http.StatusBadRequest)
+
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
 }
