@@ -2,13 +2,28 @@
 import React from 'react'
 
 const CreateNewProductForm = () => {
+	const NewProductFormAction = async (formData : FormData) => {
+		const productName = formData.get("productNameInput");
+
+		await fetch("http://localhost:8080/products", {
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			method: 'POST',
+			body: JSON.stringify({
+				productName
+			})
+		});
+	}
+
 	return (
 		<>
-			<form action="">
+			<form 
+				action={NewProductFormAction}>
 				<div>
 					<label 
 						htmlFor="productNameInput">
-							Poll Query
+							Product Name
 					</label>
 					<input
 						id="productNameInput"
