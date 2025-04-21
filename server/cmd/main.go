@@ -1,19 +1,21 @@
 package main
 
 import (
-	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 
-	"github.com/jackc/pgx/v5/pgxpool"
+	_ "github.com/lib/pq"
 )
 
 type Product struct {
 	Name string
 }
+
+var Db *sql.DB
 
 func main() {
 	port, ok := os.LookupEnv("PORT")
@@ -23,35 +25,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	ConnectDatabase()
-
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("POST /products", handleProducts)
 
-	fmt.Printf("Server listening to Port %v", port)
+	ConnectDatabase()
+
+	fmt.Printf("Server listening to Port: %v", port)
 	http.ListenAndServe(port, mux)
-}
-
-func ConnectDatabase() {
-	dbHost := os.Getenv("DB_HOST")
-	dbPort, _ := strconv.Atoi(os.Getenv("DB_PORT"))
-	dbUser := os.Getenv("DB_USER")
-	dbPass := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-
-	// Need to error handle all envs at some point
-	// reference how it is done in main
-
-	psqlConn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", dbUser, dbPass, dbHost, dbPort, dbName)
-
-	db, err := pgxpool.New(context.Background(), psqlConn)
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	fmt.Println("Successfully connected to database!")
 }
 
 func handleProducts(w http.ResponseWriter, r *http.Request) {
@@ -80,4 +61,23 @@ func handleProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+func ConnectDatabase() {
+	dbHost := os.Getenv("DB_HOST")
+	dbPort, _ := strconv.Atoi(os.Getenv("DB_PORT"))
+	dbUser := os.Getenv("DB_USER")
+	dbPass := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+
+	psqlConn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", dbUser, dbPass, dbHost, dbPort, dbName)
+
+	db, errSql := sql.Open("postgres", psqlConn)
+
+	if errSql != nil {
+		fmt.Println("There is an error while connecting to the database", errSql)
+	} else {
+		Db = db
+		fmt.Println("Succesfully connected to database!")
+	}
 }
