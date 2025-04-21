@@ -5,7 +5,7 @@ const CreateNewProductForm = () => {
 	const NewProductFormAction = async (formData : FormData) => {
 		const productName = formData.get("productNameInput");
 
-		await fetch("http://localhost:8080/products", {
+		await fetch(`${process.env.GO_API}/products`, {
 			headers: {
 				'Content-Type': 'application/json',
 			},
