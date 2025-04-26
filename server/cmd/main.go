@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -27,15 +28,19 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /products", handleProducts)
+	mux.HandleFunc("POST /products", handleCreateProducts)
+	mux.HandleFunc("GET /products", handleGetAllProducts)
 
 	ConnectDatabase()
 
 	fmt.Printf("Server listening to Port: %v", port)
-	http.ListenAndServe(port, mux)
+	err := http.ListenAndServe(":"+port, mux)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
-func handleProducts(w http.ResponseWriter, r *http.Request) {
+func handleCreateProducts(w http.ResponseWriter, r *http.Request) {
 	var product Product
 
 	err := json.NewDecoder(r.Body).Decode(&product)
@@ -61,6 +66,10 @@ func handleProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+func handleGetAllProducts(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }
 
 func ConnectDatabase() {
