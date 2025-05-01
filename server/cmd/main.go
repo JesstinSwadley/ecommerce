@@ -57,7 +57,7 @@ func handleCreateProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = Db.Exec("insert into products (name) values ($1)", product.Name)
+	_, err = Db.Exec("INSERT INTO products (name) values ($1)", product.Name)
 
 	if err != nil {
 		fmt.Println(err)
@@ -69,7 +69,27 @@ func handleCreateProducts(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGetAllProducts(w http.ResponseWriter, r *http.Request) {
+	var product string
+	var products []string
+
+	rows, err := Db.Query("SELECT * FROM prodcuts")
+
+	defer rows.Close()
+
+	if err != nil {
+		fmt.Println(err)
+
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	for rows.Next() {
+		rows.Scan(&product)
+		products = append(products, product)
+	}
+
 	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", "application/json")
+	w.Write([]byte(product))
 }
 
 func ConnectDatabase() {
