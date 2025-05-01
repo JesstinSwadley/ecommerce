@@ -1,20 +1,18 @@
 import React from 'react'
 
-const HomeProductList = () => {
-	const Products = [
-		{
-			name: "Product 1",
-			id: 1
-		},
-		{
-			name: "Product 2",
-			id: 2
-		}
-	]
+type Product = {
+	id: number,
+	name: string 
+}
+
+const HomeProductList = async () => {
+	const res = await fetch(`${process.env.GO_API}/products`);
+
+	const products: Product[] = await res.json();
 
 	return (
 		<div>
-			{Products.map(product => <li key={product.id}><span>{product.name}</span></li>)}
+			{products.map(product => <li key={product.id}><span>{product.name}</span></li>)}
 		</div>
 	)
 }
