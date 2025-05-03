@@ -1,4 +1,5 @@
 import React from 'react'
+import ProductCard from './ProductCard';
 
 type Product = {
 	id: number,
@@ -12,7 +13,7 @@ const HomeProductList = async () => {
 
 	return (
 		<div>
-			{products.map(product => <li key={product.id}><span>{product.name}</span></li>)}
+			{products.map(product => <ProductCard key={product.id} name={product.name} />)}
 		</div>
 	)
 }
