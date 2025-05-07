@@ -30,6 +30,7 @@ func main() {
 
 	mux.HandleFunc("POST /products", handleCreateProducts)
 	mux.HandleFunc("GET /products", handleGetAllProducts)
+	mux.HandleFunc("PATCH /products", handleUpdateProducts)
 
 	ConnectDatabase()
 
@@ -90,6 +91,10 @@ func handleGetAllProducts(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Add("Content-Type", "application/json")
 	w.Write([]byte(product))
+}
+
+func handleUpdateProducts(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }
 
 func ConnectDatabase() {
