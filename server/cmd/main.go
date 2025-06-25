@@ -1,11 +1,16 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 )
+
+type Product struct {
+	Name string
+}
 
 func main() {
 	port, ok := os.LookupEnv("PORT")
@@ -21,13 +26,23 @@ func main() {
 
 	err := http.ListenAndServe(":"+port, mux)
 
-	fmt.Println(err)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func handleCreateProducts(w http.ResponseWriter, r *http.Request) {
+	var product Product
+
+	err := json.NewDecoder(r.Body).Decode(&product)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+
+		return
+	}
+
+	fmt.Println(product)
+
 	w.WriteHeader(http.StatusCreated)
 }
