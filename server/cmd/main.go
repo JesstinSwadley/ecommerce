@@ -9,7 +9,8 @@ import (
 )
 
 type Product struct {
-	Name string
+	Name  string
+	Price float64
 }
 
 func main() {
@@ -23,6 +24,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /products", handleCreateProducts)
+	mux.HandleFunc("GET /products", handleListAllProducts)
 
 	err := http.ListenAndServe(":"+port, mux)
 
@@ -45,4 +47,10 @@ func handleCreateProducts(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(product)
 
 	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte("Product was created"))
+}
+
+func handleListAllProducts(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("List All Products"))
 }
