@@ -25,6 +25,8 @@ func main() {
 
 	mux.HandleFunc("POST /products", handleCreateProducts)
 	mux.HandleFunc("GET /products", handleListAllProducts)
+	mux.HandleFunc("PATCH /products", handleUpdateProducts)
+	mux.HandleFunc("DELETE /products", handleDeleteProducts)
 
 	err := http.ListenAndServe(":"+port, mux)
 
@@ -53,4 +55,14 @@ func handleCreateProducts(w http.ResponseWriter, r *http.Request) {
 func handleListAllProducts(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("List All Products"))
+}
+
+func handleUpdateProducts(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Update Product"))
+}
+
+func handleDeleteProducts(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Delete Product"))
 }
